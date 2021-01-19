@@ -33,7 +33,8 @@ func showSnippet(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Write([]byte("Display a specific snippet..."))
+	//w.Write([]byte("Display a specific snippet..."))
+	//ใช้ fmt.Fprintf() function เพื่อแทรก respond id value และ write ที่ http.RespondWriter
 	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
 }
 
