@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // กำหนดฟังก์ชันhome handler ซึ่งเขียนด้วยbyte slice ที่มี
@@ -21,7 +23,18 @@ func home(w http.ResponseWriter, r *http.Request) {
 
 //เพิ่ม showSnippet handler function
 func showSnippet(w http.ResponseWriter, r *http.Request) {
+
+	//ดึงค่าของ id parameter จาก query string และ
+	//พยายามแปลงเป็น int ไดยใช้ strconv.Atoi() function ถ้า
+	//ไม่สามารถแปลง็นintได้ หรือ ค่าน้อยกว่า 1
+	//เราจะrespondคืน 404 not found
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
 	w.Write([]byte("Display a specific snippet..."))
+	fmt.Fprintf(w, "Display a specific snippet with ID %d...", id)
 }
 
 //เพิ่ม createSnippet handler function
@@ -36,9 +49,13 @@ func createSnippet(w http.ResponseWriter, r *http.Request) {
 		//ใช้ Header().Set() method เพื่อเพิ่ม 'Allow: POST' header
 		//ที่จะตอบสนอง header map
 		//parameter แรกคือ ชื่อheader ตัวสองคือ ค่าheader
+		//http.Error function เหมือนรวม w.WriteHeader และ w.Write
 		w.Header().Set("Allow", "POST")
-		w.WriteHeader(405)
-		w.Write([]byte("Method Not Allowed"))
+		http.Error(w, "Method Now Allowed", 405)
+		//codeเก่าแบบยาว
+		//w.WriteHeader(405)
+		//w.Write([]byte("Method Not Allowed"))
+
 		return
 	}
 	w.Write([]byte("Create net snippet..."))
@@ -78,3 +95,4 @@ func main() {
 //การดำเนินการที่เปลี่ยนสถานะserver หรือdatabase ควรใช้ post method
 
 //you must call w.WriteHeader() before any call to w.Write().
+//method ในoop คือfunctionที่อยู่ในclass ส่วนในgolang คือ functionที่มี reciever
